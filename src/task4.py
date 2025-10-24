@@ -147,12 +147,12 @@ def input_error(func: Callable) -> Callable:
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except (KeyError, IndexError) as e:
-            # для этих типов игнорируем str(e)
-            return ERROR_MSG[type(e)]
-        except ValueError as e:
-            msg = str(e).strip()
-            return msg if msg else ERROR_MSG[ValueError]
+        except (KeyError, IndexError, ValueError) as e:
+            default = ERROR_MSG.get(type(e), "Input error")
+            if isinstance(e, ValueError):
+                msg = str(e).strip()
+                return msg or default
+            return default
     return wrapper
 
 # -----------------------------------------------------------------------
@@ -467,7 +467,7 @@ def main():
         with open(STORAGE) as json_file:
             try:
                 contacts_data = load_contacts(STORAGE)
-            except:
+            except (json.JSONDecodeError, OSError):
                 contacts_data = {}
 
     # Welcome message

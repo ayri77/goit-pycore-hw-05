@@ -139,7 +139,7 @@ def test_delete_contact_errors(args, expected_substr):
         "Maria": "+380441234567",
         "John": "0677654321",
     }
-    msg = delete_contact(args, contacts)
+    msg = delete_contact(args, contacts.copy())
     assert expected_substr in msg
 
 #-------------------- show_phone tests ------------------------------
@@ -157,7 +157,7 @@ def test_show_contact_ok(args, expected_msg):
         "John Doe": "0677654321",
     }
 
-    msg = show_phone(args, contacts)
+    msg = show_phone(args, contacts.copy())
     assert msg == expected_msg
 
 
@@ -175,7 +175,7 @@ def test_show_contact_errors(args, expected_substr):
         "Maria": "+380441234567",
         "John": "0677654321",
     }
-    msg = show_phone(args, contacts)
+    msg = show_phone(args, contacts.copy())
     assert expected_substr in msg
 
 #-------------------- delete_all tests ------------------------------
@@ -206,7 +206,7 @@ def test_delete_all_ok(args, expected_contacts):
 )
 def test_delete_all_errors(args, expected_substr):
     contacts = {}
-    msg = delete_all(contacts)
+    msg = delete_all(contacts.copy())
     assert expected_substr in msg
 
 #-------------------- parse_input tests ------------------------------
@@ -216,8 +216,9 @@ def test_delete_all_errors(args, expected_substr):
         ("add John +380441234567", ("add", ["John", "+380441234567"])),
         (" change  John   +380441234567  ", ("change", ["John", "+380441234567"])),
         (" phone 'John Doe'", ("phone", ["John Doe"])),
+        ("delete all", ("delete_all", [])),
     ],
-    ids=["normal_input","extra_spaces","quoted_name"]
+    ids=["normal_input","extra_spaces","quoted_name","delete_all_command"]
 )
 def test_parse_input_ok(input_data, expected_output):
     output = parse_input(input_data)
@@ -257,7 +258,7 @@ contacts = {
     ids=["hello","help","exit","show_phone","add","change","delete","delete_all"]
 )
 def test_process_line_ok(command, args, contacts, expected_output):
-    output = process_line(command, args, contacts)
+    output = process_line(command, args, contacts.copy())
     assert output == expected_output
 
 @pytest.mark.parametrize(
@@ -270,7 +271,7 @@ def test_process_line_ok(command, args, contacts, expected_output):
 )
 def test_process_line_errors(command, args, contacts):
     with pytest.raises(ValueError):
-        process_line(command, args, contacts)
+        process_line(command, args, contacts.copy())
 
 
 # -------------------- End of tests ------------------------------
